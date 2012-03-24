@@ -14,4 +14,6 @@ Gem::Specification.new do |gem|
   gem.name          = "bundler_local_development"
   gem.require_paths = ["lib"]
   gem.version       = BundlerLocalDevelopment::VERSION
+
+  gem.add_dependency 'bundler'
 end
