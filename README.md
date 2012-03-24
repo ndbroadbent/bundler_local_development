@@ -26,15 +26,23 @@ And then execute:
 * Call `Bundler.development_gems = [...]` in your Gemfile, to configure
   your default set of local gems.
   You can provide regular expressions or strings to match gem names.
-* Set $DEV_GEMS to add extra gems to this list (comma separated list of gem names).
+* Set the `$DEV_GEMS` environment variable to add extra gems to this list (comma separated list of gem names).
 
-If the $GEM_DEV environment variable is set, bundler will search for gems in the
-path specified by $GEM_DEV_DIR (or $HOME/code/gems if not set.)
+If the `$GEM_DEV` environment variable is unset, this gem will do nothing.
+
+If the `$GEM_DEV` environment variable is set:
+
+* Bundler will search for local gems in the
+path specified by `$GEM_DEV_DIR`. (The default search path is `$HOME/code/gems`, if `$GEM_DEV_DIR` is unset.)
+
+* If a local copy of the gem is found, it will add the `:path => <path>`
+option to the `gem` command.
 
 
 ## Shell shortcut
 
 In order to make the most of this gem, you need a quick way to enable or disable it.
+
 Add the following function to your `~/.bashrc` or `~/.zshrc`:
 
 ```bash
@@ -51,7 +59,7 @@ gdv() {
 }
 ```
 
-Now you will be able to enable or disable the gem by typing `gdv`.
+Now you will be able to enable or disable the gem by typing: `gdv`
 
 
 ## Indicator in Shell Prompt
