@@ -28,7 +28,7 @@ And then execute:
   You can provide regular expressions or strings to match gem names.
 * Set the `$DEV_GEMS` environment variable to add extra gems to this list (comma separated list of gem names).
 
-If the `$GEM_DEV` environment variable is unset, this gem will do nothing.
+If the `$GEM_DEV` environment variable is unset, this gem will have no effect.
 
 If the `$GEM_DEV` environment variable is set:
 
@@ -37,6 +37,8 @@ path specified by `$GEM_DEV_DIR`. (The default search path is `$HOME/code/gems`,
 
 * If a local copy of the gem is found, it will add the `:path => <path>`
 option to the `gem` command.
+
+* `Gemfile.lock` will **NOT** be updated if this gem is activated.
 
 
 ## Shell shortcut

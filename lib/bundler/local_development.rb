@@ -33,4 +33,12 @@ module Bundler
     end
     alias :gem :gem_with_development
   end
+
+  class Definition
+    # Don't update Gemfile.lock when developing with local gems
+    alias :lock_original :lock
+    def lock(*args)
+      lock_original(*args) unless ENV['GEM_DEV']
+    end
+  end
 end
