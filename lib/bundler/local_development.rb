@@ -15,7 +15,7 @@ module Bundler
     end
     def development_gems
       (@@development_gems ||= []) +
-      ENV['DEV_GEMS'].to_s.split(',').map(&:strip).select{|s| s != "" })
+      ENV['DEV_GEMS'].to_s.split(',').map(&:strip).select{|s| s != "" }
     end
   end
 
