@@ -11,25 +11,34 @@
 module Bundler
   class << self
     def development_gems=(search_strings)
-      @@development_gems = search_strings
+      @@development_gems = [search_strings].flatten
     end
     def development_gems
-      (@@development_gems ||= []) +
-      ENV['DEV_GEMS'].to_s.split(',').map(&:strip).select{|s| s != "" }
+      # If $DEV_GEMS is provided, append to @@development_gems
+      if ENV['DEV_GEMS']
+        (@@development_gems ||= []) +
+        ENV['DEV_GEMS'].to_s.split(';').map(&:strip).select{|s| s != "" }
+      # Otherwise, default is to make all gems local
+      else
+        @@development_gems ||= [:all]
+      end
     end
   end
 
   class Dsl
     alias :gem_without_development :gem
     def gem_with_development(name, *args)
-      if ENV['GEM_DEV'] && Bundler.development_gems.any?{ |s| name[s] }
-        gem_dev_dir = ENV['GEM_DEV_DIR'] || "#{`echo $HOME`.strip}/code/gems"
-        path = File.join(gem_dev_dir, name)
-        if File.exist?(path)
-          # Check each local gem's gemspec to see if any dependencies need to be made local
-          gemspec_path = File.join(gem_dev_dir, name, "#{name}.gemspec")
-          process_gemspec_dependencies(gemspec_path, gem_dev_dir) if File.exist?(gemspec_path)
-          return gem_without_development name, :path => path
+      if ENV['GEM_DEV']
+        if Bundler.development_gems == [:all] || Bundler.development_gems.any?{ |s| name[s] }
+          gem_development_dirs.each do |dir|
+            path = File.join(dir, name)
+            if File.exist?(path)
+              # Check each local gem's gemspec to see if any dependencies need to be made local
+              gemspec_path = File.join(dir, name, "#{name}.gemspec")
+              process_gemspec_dependencies(gemspec_path) if File.exist?(gemspec_path)
+              return gem_without_development name, :path => path
+            end
+          end
         end
       end
       gem_without_development(name, *args)
@@ -37,11 +46,25 @@ module Bundler
     alias :gem :gem_with_development
 
     private
-    def process_gemspec_dependencies(gemspec_path, gem_dev_dir)
+    # Returns local gem dirs from ENV or default
+    def gem_development_dirs
+      @gem_development_dirs ||= if ENV['GEM_DEV_DIR']
+        ENV['GEM_DEV_DIR'].split(';')
+      else
+        ["#{`echo $HOME`.strip}/code/gems"]
+      end
+    end
+
+    def process_gemspec_dependencies(gemspec_path)
       spec = Bundler.load_gemspec(gemspec_path)
       spec.runtime_dependencies.each do |dep|
-        path = File.join(gem_dev_dir, dep.name)
-        gem_without_development(dep.name, :path => path) if File.exist?(path)
+        gem_development_dirs.each do |dir|
+          path = File.join(dir, dep.name)
+          if File.exist?(path)
+            gem_without_development(dep.name, :path => path)
+            break  # Process next dependency
+          end
+        end
       end
     end
   end

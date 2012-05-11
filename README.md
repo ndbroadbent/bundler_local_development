@@ -26,7 +26,7 @@ And then execute:
 * Call `Bundler.development_gems = [...]` in your Gemfile, to configure
   your default set of local gems.
   You can provide regular expressions or strings to match gem names.
-* Set the `$DEV_GEMS` environment variable to add extra gems to this list (comma separated list of gem names).
+* Set the `$DEV_GEMS` environment variable to add extra gems to this list (semicolon separated list of gem names).
 
 If the `$GEM_DEV` environment variable is unset, this gem will have no effect.
 
@@ -34,9 +34,12 @@ If the `$GEM_DEV` environment variable is set:
 
 * Bundler will search for local gems in the
 path specified by `$GEM_DEV_DIR`. (The default search path is `$HOME/code/gems`, if `$GEM_DEV_DIR` is unset.)
+You can specify multiple directories by separating paths with a semicolon, e.g.
+`$HOME/code/gems;$HOME/code/more_gems`
 
 * If a local copy of the gem is found, it will add the `:path => <path>`
 option to the `gem` command.
+It will also scan the local gem's gemspec and process any runtime dependencies.
 
 * `Gemfile.lock` will **NOT** be updated if this gem is activated.
 
