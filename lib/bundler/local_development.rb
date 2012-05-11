@@ -26,12 +26,24 @@ module Bundler
         gem_dev_dir = ENV['GEM_DEV_DIR'] || "#{`echo $HOME`.strip}/code/gems"
         path = File.join(gem_dev_dir, name)
         if File.exist?(path)
+          # Check each local gem's gemspec to see if any dependencies need to be made local
+          gemspec_path = File.join(gem_dev_dir, name, "#{name}.gemspec")
+          process_gemspec_dependencies(gemspec_path, gem_dev_dir) if File.exist?(gemspec_path)
           return gem_without_development name, :path => path
         end
       end
       gem_without_development(name, *args)
     end
     alias :gem :gem_with_development
+
+    private
+    def process_gemspec_dependencies(gemspec_path, gem_dev_dir)
+      spec = Bundler.load_gemspec(gemspec_path)
+      spec.runtime_dependencies.each do |dep|
+        path = File.join(gem_dev_dir, dep.name)
+        gem_without_development(dep.name, :path => path) if File.exist?(path)
+      end
+    end
   end
 
   class Definition
