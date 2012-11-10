@@ -26,6 +26,8 @@ module Bundler
   end
 
   class Dsl
+    @@loaded_gemfiles = []
+
     alias :gem_without_development :gem
     def gem_with_development(name, *args)
       if ENV['GEM_DEV']
@@ -36,14 +38,19 @@ module Bundler
               # Check each local gem's gemspec to see if any dependencies need to be made local
               gemspec_path = File.join(dir, name, "#{name}.gemspec")
               process_gemspec_dependencies(gemspec_path) if File.exist?(gemspec_path)
+
               # Evaluate local gem's Gemfile, if present
               gemfile_path = File.join(dir, name, "Gemfile")
-              if File.exist?(gemfile_path)
-                gemfile = File.read(gemfile_path).
-                          gsub(/^(source|gemspec).*\s+/, '').   # Strip sources and gemspecs
-                          gsub(/^\s*gem ['"]rake['"].*/, '')    # Strip rake
-                eval gemfile
+              if File.exist?(gemfile_path) && !@@loaded_gemfiles.include?(gemfile_path)
+                gemfile_body = File.read(gemfile_path).
+                               gsub(/^(source|gemspec).*\s+/, '').   # Strip sources and gemspecs
+                               gsub(/^\s*gem ['"]rake['"].*/, '')    # Strip rake
+                # Evaluate stripped Gemfile
+                eval gemfile_body
+                # Try to avoid infinite loops
+                @@loaded_gemfiles << gemfile_path
               end
+
               return gem_without_development name, :path => path
             end
           end
