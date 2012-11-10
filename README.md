@@ -18,9 +18,13 @@ Add these lines to your application's Gemfile:
     rescue LoadError
     end
 
-And then execute:
+And then install the gem with:
 
     $ bundle
+
+or:
+
+    gem install bundler_local_development
 
 
 ## Usage
