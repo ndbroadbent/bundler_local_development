@@ -12,7 +12,9 @@ Add these lines to your application's Gemfile:
     gem 'bundler_local_development', :group => :development, :require => false
     begin
       require 'bundler_local_development'
-      Bundler.development_gems = [/foo/, 'bar', /baz/]  # Set this to [:all] to disable filter
+      # Set up list of gems that should be loaded if they are found in your local gem directory.
+      # Remove this line to always load local gems when possible.
+      Bundler.development_gems = [/foo/, 'bar', /baz/]
     rescue LoadError
     end
 
