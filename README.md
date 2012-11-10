@@ -12,7 +12,7 @@ Add these lines to your application's Gemfile:
     gem 'bundler_local_development', :group => :development, :require => false
     begin
       require 'bundler_local_development'
-      Bundler.development_gems = [/foo/, 'bar', /baz/]
+      Bundler.development_gems = [/foo/, 'bar', /baz/]  # Set this to [:all] to disable filter
     rescue LoadError
     end
 
@@ -26,6 +26,8 @@ And then execute:
 * Call `Bundler.development_gems = [...]` in your Gemfile, to configure
   your default set of local gems.
   You can provide regular expressions or strings to match gem names.
+  You can also use `[:all]` to disable filtering and load all local gems if they exist.
+
 * Set the `$DEV_GEMS` environment variable to add extra gems to this list (semicolon separated list of gem names).
 
 If the `$GEM_DEV` environment variable is unset, this gem will have no effect.
