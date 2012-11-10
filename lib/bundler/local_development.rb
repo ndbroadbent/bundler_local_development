@@ -36,6 +36,14 @@ module Bundler
               # Check each local gem's gemspec to see if any dependencies need to be made local
               gemspec_path = File.join(dir, name, "#{name}.gemspec")
               process_gemspec_dependencies(gemspec_path) if File.exist?(gemspec_path)
+              # Evaluate local gem's Gemfile, if present
+              gemfile_path = File.join(dir, name, "Gemfile")
+              if File.exist?(gemfile_path)
+                gemfile = File.read(gemfile_path).
+                          gsub(/^(source|gemspec).*\s+/, '').   # Strip sources and gemspecs
+                          gsub(/^\s*gem ['"]rake['"].*/, '')    # Strip rake
+                eval gemfile
+              end
               return gem_without_development name, :path => path
             end
           end
