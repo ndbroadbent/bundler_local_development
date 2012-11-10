@@ -39,7 +39,11 @@ You can specify multiple directories by separating paths with a semicolon, e.g.
 
 * If a local copy of the gem is found, it will add the `:path => <path>`
 option to the `gem` command.
-It will also scan the local gem's gemspec and process any runtime dependencies.
+It will scan the local gem's `gemspec` and process any runtime dependencies.
+
+It will also load and evaluate the local gem's `Gemfile`.
+The Gemfile will have any `source` or `gemspec` lines stripped, as well as removing the `rake` gem.
+(I found that `rake` was often pegged at different versions.)
 
 * `Gemfile.lock` will **NOT** be updated if this gem is activated.
 
