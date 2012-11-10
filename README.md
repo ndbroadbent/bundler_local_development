@@ -29,9 +29,9 @@ or:
 
 ## Usage
 
-Call `Bundler.development_gems = [...]` in your Gemfile, to configure your default set of local gems.
+Call `Bundler.development_gems = [...]` in your Gemfile, to configure which local gems are allowed to override the `gem` directive.
 You can provide regular expressions or strings to match gem names.
-You can also use `[:all]` to disable filtering and load all local gems if they exist.
+You can also use `[:all]` to disable any filtering and load all local gems when they exist.
 
 The reasoning behind these filters is that you might have a lot of gems in your local gem directory,
 and it would be hard to make sure that they all have the correct version checked out.
