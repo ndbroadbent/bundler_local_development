@@ -40,13 +40,11 @@ and it would be hard to make sure that they all have the correct version checked
 
 You can set the `$DEV_GEMS` environment variable to add extra gems to this list (semicolon separated list of gem names).
 
-If the `$GEM_DEV` environment variable is unset, this gem will have no effect.
-
-If the `$GEM_DEV` environment variable is set:
+The `$GEM_DEV` environment variable must be set in order for this gem to take effect.
 
 ## Loading local gems
 
-Bundler will search for local gems in the
+If the `$GEM_DEV` environment variable is set, Bundler will search for local gems in the
 path specified by `$GEM_DEV_DIR`. (The default search path is `$HOME/code/gems`, if `$GEM_DEV_DIR` is unset.)
 You can specify multiple directories by separating paths with a semicolon, e.g.
 `$HOME/code/gems;$HOME/code/more_gems`
