@@ -12,7 +12,7 @@ Add these lines to your application's Gemfile:
     gem 'bundler_local_development', :group => :development, :require => false
     begin
       require 'bundler_local_development'
-      # Set up list of gems that should be loaded if they are found in your local gem directory.
+      # Set up the list of gems that should be used when they are found in your local gem directory.
       # Remove this line to always load local gems when possible.
       Bundler.development_gems = [/foo/, 'bar', /baz/]
     rescue LoadError
@@ -29,31 +29,35 @@ or:
 
 ## Usage
 
-* Call `Bundler.development_gems = [...]` in your Gemfile, to configure
-  your default set of local gems.
-  You can provide regular expressions or strings to match gem names.
-  You can also use `[:all]` to disable filtering and load all local gems if they exist.
+Call `Bundler.development_gems = [...]` in your Gemfile, to configure your default set of local gems.
+You can provide regular expressions or strings to match gem names.
+You can also use `[:all]` to disable filtering and load all local gems if they exist.
 
-* Set the `$DEV_GEMS` environment variable to add extra gems to this list (semicolon separated list of gem names).
+The reasoning behind these filters is that you might have a lot of gems in your local gem directory,
+and it would be hard to make sure that they all have the correct version checked out.
+
+### Environment Variables
+
+You can set the `$DEV_GEMS` environment variable to add extra gems to this list (semicolon separated list of gem names).
 
 If the `$GEM_DEV` environment variable is unset, this gem will have no effect.
 
 If the `$GEM_DEV` environment variable is set:
 
-* Bundler will search for local gems in the
+## Loading local gems
+
+Bundler will search for local gems in the
 path specified by `$GEM_DEV_DIR`. (The default search path is `$HOME/code/gems`, if `$GEM_DEV_DIR` is unset.)
 You can specify multiple directories by separating paths with a semicolon, e.g.
 `$HOME/code/gems;$HOME/code/more_gems`
 
-* If a local copy of the gem is found, it will add the `:path => <path>`
+If a local copy of the gem is found, it will add the `:path => <path>`
 option to the `gem` command.
+
 It will scan the local gem's `gemspec` and process any runtime dependencies.
+It will also load and evaluate the local gem's `Gemfile`. The Gemfile will have any `source` or `gemspec` lines stripped, as well as removing the `rake` gem. (I found that `rake` was most likely to be pegged at different versions.
 
-It will also load and evaluate the local gem's `Gemfile`.
-The Gemfile will have any `source` or `gemspec` lines stripped, as well as removing the `rake` gem.
-(I found that `rake` was often pegged at different versions.)
-
-* `Gemfile.lock` will **NOT** be updated if this gem is activated.
+Note that `Gemfile.lock` will **NOT** be updated if this gem is activated.
 
 
 ## Shell shortcut
